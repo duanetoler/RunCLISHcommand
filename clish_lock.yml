@@ -1,0 +1,11 @@
+---
+- name: CLISH lock
+  include_tasks: run_script.yml
+  vars:
+    description: Get CLISH lock
+    script: |
+      clish -c 'lock database override'
+      clish -c 'unlock database'
+    wait_for_task: true
+
+...

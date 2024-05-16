@@ -1,0 +1,66 @@
+---
+- debug:
+    msg:
+      - "{{ inv_host }} - {{ inventory_hostname }}"
+      - "{{ config_dir }} / {{ config_file }}"
+      - "{{ sys['vsx_host'] |default('no vsx') }}"
+      - "keep_script: {{ keep_script |default(false) |bool }}"
+      - "save_output: {{ save_output |default(false) |bool }}"
+      - "show_output: {{ show_output |default(true)  |bool }}"
+  when: debug |default(false) |bool
+
+- name: Create directory locally
+  ansible.builtin.file:
+    path: "{{ config_dir }}"
+    state: directory
+    mode: '0755'
+  run_once: true
+  delegate_to: localhost
+
+- name: Generate CLISH script
+  ansible.builtin.template:
+    src: clish_cmd.j2
+    dest: "{{ config_dir }}/{{ config_file }}"
+    lstrip_blocks: true
+  delegate_to: localhost
+  vars:
+    clish_command: "{% if vs_id is defined and clish_cmd == 'show configuration' %}{{ vs_clish_config_cmds }}{% else %}{{ clish_cmd }}{% endif %}"
+
+- name: "Create {{ config_dir }} on {{ inventory_hostname }}"
+  include_tasks: run_script.yml
+  vars:
+    description: 'Create CLISH config directory'
+    script: "mkdir -p /home/admin/{{ config_dir }}"
+    wait_for_task: true
+
+- name: Copy CLISH script
+  check_point.gaia.cp_gaia_put_file:
+    file_name: "/home/admin/{{ config_dir }}/{{ config_file }}"
+    text_content: "{{ lookup('file', [ config_dir, config_file ] |join('/') ) }}\n"
+    override: true
+  delegate_to: "{{ inventory_hostname }}"
+
+- include_tasks: apply_clish_script.yml
+
+- include_tasks: save_output.yml
+  when:
+    - script_res.run_script.tasks[0]['task-details'][0]['return-value'] == 0
+
+- block:
+    - name: Remove CLISH script
+      ansible.builtin.file:
+        path: "{{ config_dir }}/{{ config_file }}"
+        state: absent
+      delegate_to: localhost
+
+    - name: Remove CLISH script from gateway
+      include_tasks: run_script.yml
+      vars:
+        description: 'Create CLISH config directory'
+        script: "rm /home/admin/{{ config_dir }}/{{ config_file }}"
+        wait_for_task: true
+  when:
+    - not (keep_script |default(false) |bool)
+    - ansible_loop.last |default(true)
+
+...

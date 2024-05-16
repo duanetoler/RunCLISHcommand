@@ -1,0 +1,16 @@
+---
+- name: "Run script via Gaia API" # {{ description |default('') }}"
+  check_point.gaia.cp_gaia_run_script:
+    description: "{{ description }}"
+    script: "{{ script }}"
+    wait_for_task: true
+  delegate_to: "{{ inventory_hostname }}" #|default(inv_host) }}"
+  register: script_res
+
+- name: Check for run-time errors
+  include_tasks: check_errors.yml
+  when:
+    - script_res['run_script'] is defined
+    - script_res['run_script']['tasks'][0]['task-details'][0]['return-value'] != 0
+
+...

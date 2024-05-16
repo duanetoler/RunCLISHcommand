@@ -1,0 +1,72 @@
+---
+# Variables for the playbooks
+
+# Your ansible user:  a Gaia CLISH user with access via Gaia API; not
+# expert-level user Or use '-u NAME' with the script
+ansible_user: "{{ gaia_admin_user |default('admin') }}"
+
+# Your Gaia user password You can uncomment 'gaia_admin_password' below and
+# enter the password here, in plain text (BAD IDEA), or create a vault in
+# your inventory host_vars/group_vars (GOOD IDEA).
+#
+# To use a vault:
+#   * Make a new file in your inventory host_vars or group_vars directory as
+#   you wish.
+#  * The variable is a dict named 'clish_users_vault':
+#     key is the username
+#     value is the plain text password (hang on...)
+#  # Encrypt the vault with 'ansible-vault encrypt ...' Pass "-P" ot the
+#   script and it will prompt for the vault passphrase
+#
+# (if you know what you're doing, then you can edit the script to use a
+# vault script to fetch the passphrase, which is what I do)
+#
+# ---
+# clish_users_vault:
+#   admin: 'password123'
+#   myuser: 'greatpassword'
+# ...
+
+#gaia_admin_password: 'plaintextpassword'
+ansible_password: "{{ gaia_admin_password |default(clish_users_vault[ansible_user]) }}"
+
+# Gaia API plugin
+ansible_network_os: check_point.gaia.checkpoint
+
+# Name of directory, on Ansible controller under playbook dir, to store
+# output of CLISH commands
+output_dir: clish_output
+
+# Name of directory, on both Ansible controller under playbook dir, and
+# remote Gaia host (under /home/admin), where CLISH scripts are stored after
+# being generated.  CLISH scripts are transferred using Gaia API put_file
+config_dir: files
+
+# Print some debugs if you have issues
+debug: false
+
+# 'show configuration ...' commands relevant for a VS only in lieu of full
+# 'show configuration' for a host/gateway
+#
+# * For any Gaia host or gateway, if the CLISH command "show configuration"
+# is passed to the script, this is passed as-is to the CLISH template.
+#
+# * For any VSX VS, if the CLISH command "show configuration" is passed to
+# the script, this list is substituted and passed to the CLISH template. 
+# You can edit this if you wish, but do so with caution, if you know what
+# you're doing.  VSX folks usually do.  :)
+vs_clish_config_cmds:
+  - 'show configuration bootp'
+  - 'show configuration iphelper'
+  - 'show configuration dns'
+  - 'show configuration dhcp-server'
+  - 'show configuration snmp'
+  - 'show configuration pbr'
+  - 'show configuration vpnt'
+  - 'show configuration ip-reachability-detection'
+  - 'show configuration prefix-list'
+  - 'show configuration prefix-tree'
+  - 'show configuration routemaps'
+  - 'show configuration bgp'
+
+...

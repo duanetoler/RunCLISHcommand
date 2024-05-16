@@ -1,0 +1,16 @@
+{#- Show configuration -#}
+
+start transaction
+{% if sys.vs_id is defined %}
+set virtual-system {{ sys.vs_id }}
+{% endif %}
+
+{% if clish_command is string %}
+{{ clish_command }}
+{% elif clish_command is iterable and clish_command is not string %}
+  {% for cmd in clish_command %}
+{{ cmd }}
+  {% endfor %}
+{% endif %}
+commit
+

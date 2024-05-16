@@ -1,0 +1,20 @@
+---
+- name: Check for run-time errors
+  debug:
+    msg:
+      - Errors: "{{ script_res.run_script.tasks[0]['task-details'][0]['error'] |b64decode }}"
+      - Output: "{{ (script_res.run_script.tasks[0]['task-details'][0]['output'] |b64decode).splitlines()
+                |reject('eq', '.')
+                |reject('match', '#')
+                |reject('contains', 'Processing line')
+                |reject('contains', 'Could not')
+                |reject('match', 'CLI')
+                |reject('match', '---')
+                |reject('match', 'Done')
+                |reject('match', 'Context is set to')
+                }}"
+
+- name: Fail on errors
+  fail:
+  when: not errors_ignored |default(false) |bool # yes, "errors_ignored" is correct; had to use a non-reserved variable name
+...

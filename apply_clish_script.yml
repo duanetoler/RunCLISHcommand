@@ -1,0 +1,12 @@
+---
+- include_tasks: clish_lock.yml
+
+- name: Apply CLISH script
+  include_tasks: run_script.yml
+  vars:
+    description: 'CLISH script: {{ config_file }}'
+    script: |
+      clish -f /home/admin/{{ config_dir }}/{{ config_file }}
+    wait_for_task: "{{ wait_for_api_task |default(true) }}"
+
+...

@@ -1,0 +1,9 @@
+{#- Show configuration -#}
+
+start transaction
+{% if vs_id is defined %}
+set virtual-system {{ vs_id }}
+{% endif %}
+
+show configuration
+commit

@@ -1,0 +1,23 @@
+---
+- name: Debug inventory of hosts
+  debug:
+    msg: "{{ inventory_hostname }}"
+  delegate_to: localhost
+  when:
+    - vs_list is not defined
+
+- name: Debug inventory of VSX VS
+  debug:
+    msg: "{{ inv_host }}"
+  delegate_to: localhost
+  loop: "{{ vs_list }}"
+  loop_control:
+    loop_var: inv_host
+    label: "{{ inv_host }}"
+    extended: true
+  vars:
+    config_file: "{{ inv_host }}.clish"
+    sys: "{{ hostvars[inv_host] }}"
+  when:
+    - vs_list is defined
+...

@@ -1,0 +1,66 @@
+---
+- name: Build inventory
+  hosts: localhost
+  become: false
+  gather_facts: false
+  connection: local
+
+  vars_files:
+    - vars.yml
+
+  tasks:
+    - name: Expand group names
+      set_fact:
+        targets_list: "{{ targets_list |default([]) + groups[item] }}"
+      loop: "{{ targets |split(',') }}"
+      when: groups[item] is defined
+
+    - name: Add hosts to new inventory
+      ansible.builtin.add_host:
+        name: "{{ item }}"
+        groups: new_play_hosts
+      loop: "{{ targets |split(',') + targets_list |default([]) }}"
+      when:
+        - hostvars[item]['vsx_host'] is not defined
+        - hostvars[item] is defined  # in case a group name was specified as target list, don't create a host with same name
+
+    - name: Add VSX VS to new inventory
+      include_tasks: vs_list_loop.yml
+      loop: "{{ targets |split(',') + targets_list |default([]) }}"
+      loop_control:
+        loop_var: vs_item
+      when: hostvars[vs_item]['vsx_host'] is defined
+
+- name: Run CLISH command
+  hosts: new_play_hosts
+  connection: httpapi
+  become: false
+  gather_facts: false
+  vars_files:
+     - vars.yml
+
+  tasks:
+    - include_tasks: debug_inventory.yml
+      when:
+        - debug |default(false) |bool
+
+    # Doing these as two tasks is actually faster if one more VSX VS is in the play hosts
+    - include_tasks: clish_script_build.yml
+      vars:
+        inv_host: "{{ inventory_hostname }}"
+        config_file: "{{ inv_host }}.clish"
+        sys: "{{ hostvars[inv_host] }}"
+      when: vs_list is not defined
+
+    - include_tasks: clish_script_build.yml
+      loop: "{{ vs_list }}"
+      loop_control:
+        loop_var: inv_host
+        label: "{{ inv_host }}"
+        extended: true
+      vars:
+        config_file: "{{ inv_host }}.clish"
+        sys: "{{ hostvars[inv_host] }}"
+      when: vs_list is defined
+
+...

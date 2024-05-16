@@ -1,0 +1,51 @@
+---
+- name: Parse output
+  set_fact:
+    cmd_output: "{{ (script_res.run_script.tasks[0]['task-details'][0]['output'] |b64decode).splitlines() 
+                |reject('eq', '.')
+                |reject('contains', 'Processing line')
+                |reject('contains', 'Could not')
+                |reject('match', 'CLI')
+                |reject('match', '---')
+                |reject('match', 'Done')
+                |reject('match', 'Context is set to')
+            }}"
+
+- name: Show command output
+  debug:
+    msg:
+      - "{% if sys['vsx_host'] is defined %}Virtual System: {{ inv_host }}, VS ID: {{ sys['vs_id'] }}{% else %}Host: {{ inv_host }}{% endif %}"
+      - "{{ cmd_output }}"
+  delegate_to: "{{ inventory_hostname }}"
+  when:
+    - show_output |default(true) |bool
+
+- block:
+    - name: Get local facts
+      gather_facts:
+      delegate_facts: true
+      delegate_to: localhost
+      run_once: true
+      register: local_facts
+
+    - set_fact:
+        current_date: "{{ local_facts['ansible_facts']['ansible_date_time']['date'] }}"
+
+    - name: Set CLISH script file name
+      set_fact:
+        save_config_filename: "{% if sys['vsx_host'] is defined %}{{ inventory_hostname }}.{% endif %}{{ inv_host }}.{{ current_date }}.txt"
+
+    - name: Create output dir
+      ansible.builtin.file:
+        path: "{{ output_dir }}"
+        state: directory
+        mode: '0755'
+
+    - name: Save command output
+      ansible.builtin.copy:
+        content: "{{ cmd_output |join('\n') }}\n"
+        dest: "{{ output_dir }}/{{ save_config_filename }}"
+  delegate_to: localhost
+  when:
+    - save_output |default(false) |bool
+...

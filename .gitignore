@@ -1,0 +1,5 @@
+clish_output/
+files/
+*.zip
+*.log
+*~

@@ -1,0 +1,58 @@
+all:
+  children:
+    check_point:
+      children:
+        ckp_gw:
+        ckp_mgmt:
+        vsx_virtual_systems:
+    ckp_gw:
+      children:
+        gw_cluster01:
+        vsx_gateways:
+      hosts:
+        gwA:
+          ansible_host: 192.0.2.25
+        gwB:
+          ansible_host: 192.0.2.26
+    ckp_mgmt:
+      hosts:
+        mds01:
+          ansible_host: 192.0.2.254
+        sme1:
+          ansible_host: 192.0.2.253
+        sms02:
+          ansible_host: 192.0.2.252
+    gw_cluster01:
+      hosts:
+        gw_01:
+          ansible_host: 192.0.2.10
+        gw_02:
+          ansible_host: 192.0.2.11
+    vsx_gateways:
+      children:
+        vsx_cluster01:
+      hosts:
+        vsx_gw1:
+          ansible_host: 192.0.2.9
+    vsx_cluster01:
+      hosts:
+        vsx01:
+          ansible_host: 192.0.2.17
+        vsx02:
+          ansible_host: 192.0.2.18
+    vsx_virtual_systems:
+      hosts:
+        VS01:
+          vs_id: 5
+          vsx_host: vsx_cluster01
+        VS02:
+          vs_id: 6
+          vsx_host: vsx_cluster01
+        VS03:
+          vs_id: 7
+          vsx_host: vsx_cluster01
+        VS04:
+          vs_id: 5
+          vsx_host: vsx_gw1
+
+...

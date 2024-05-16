@@ -1,0 +1,7 @@
+---
+- include_tasks: vs_list.yml
+  loop: "{{ groups[hostvars[vs_item]['vsx_host'] |default(none)] |default([ hostvars[vs_item]['vsx_host'] ]) }}"
+  loop_control:
+    loop_var: vs_host_item
+
+...
