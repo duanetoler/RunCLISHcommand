@@ -20,6 +20,7 @@
         name: "{{ item }}"
         groups: new_play_hosts
       loop: "{{ targets |split(',') + targets_list |default([]) }}"
+      delegate_to: localhost
       when:
         - hostvars[item]['vsx_host'] is not defined
         - hostvars[item] is defined  # in case a group name was specified as target list, don't create a host with same name

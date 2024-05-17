@@ -9,4 +9,5 @@
   ansible.builtin.add_host:
     name: "{{ vs_host_item }}"
     groups: new_play_hosts
+  delegate_to: localhost
 ...
