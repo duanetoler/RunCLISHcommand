@@ -1,13 +1,13 @@
 ---
 - name: Build VS list for VSX gateway
   set_fact:
-    vs_list: "{{ hostvars[vs_host_item]['vs_list'] |default([]) + [ vs_item ] }}"
-  delegate_to: "{{ vs_host_item }}"
+    vs_list: "{{ hostvars[vsx_host_item]['vs_list'] |default([]) + [ vs_item ] }}"
+  delegate_to: "{{ vsx_host_item }}"
   delegate_facts: true
 
 - name: Add VSX host to new inventory
   ansible.builtin.add_host:
-    name: "{{ vs_host_item }}"
+    name: "{{ vsx_host_item }}"
     groups: new_play_hosts
   delegate_to: localhost
 ...

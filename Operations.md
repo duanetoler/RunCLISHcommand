@@ -18,7 +18,7 @@ added to a new dynamic group ```new_play_hosts```.
 The third task loops through the same list as the second task, but instead
 checking if the variable ```vsx_host``` is defined for that inventory host
 (meaning this target is a VSX VS, the logical host with ```vs_id``` and
-```vs_host```).
+```vsx_host```).
 
 If this is a VS with ```vsx_host``` defined, an inner task is processed that
 loops through the inventory group named by the value of ```vsx_host``` (the
@@ -61,19 +61,26 @@ This lets the playbook remain targeting VS01 and VS09, even though
 the tasks will later be used as ```delegate_to: vsx_gw01``` and
 ```delegate_to: vsx_gw02```, etc.
 
+The first play is complete after processing all target list items.  The
+second play then runs, targeting the dynamic group, to complete the main
+operations of running the CLISH command on the appropriate remote host.
+
 ### Why?
 
-This allows the plays to run in serial fashion for a VS, but in parallel
-fashion for all gateways of the VS.  I ran this playbook in the original
-design, but that ended up being serial execution for all targets, which was
-VERY slow.  When I switched to this dynamic orthogonal technique, the tasks
-were much faster and operated as you would expect.
+This allows the plays to run in serial for each VS, but in parallel for all
+ gateways of the VS.  I ran this playbook in the original design,
+but that resulted in serial execution for all targets, which was VERY slow. 
+When I switched to this dynamic orthogonal technique, the tasks were much
+faster and operated as you would expect.
 
-When mixing VS and non-VS targets, the non-VS targets will go first and run
-in parallel execution as Ansible normally does.  The VS targets run second
-and they run sequentially per-VS (because they are in a loop from the
-dynamically-built ```targets_list``` with a ```when:``` clause), but their
-delegation to the VSX gateway is in parallel.
+When mixing VS and non-VS targets, the non-VS targets are processed first
+and run in parallel execution as Ansible normally does.  The VS targets are
+processed second and they run sequentially per-VS (because they are in a
+loop from the dynamically-built ```targets_list``` with a ```when:```
+clause), but their delegation to the VSX gateways is in parallel.
+
+Here is a 'show bgp peers' output for a VS on VSX load-sharing cluster.  The
+task deletegated to each gateway ran as expected, in parrallel.
 
 ```
 TASK [Parse output] ********************************************************************************
