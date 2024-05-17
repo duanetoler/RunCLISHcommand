@@ -143,8 +143,8 @@ be used for the VS (via delegate_to:).  The playbook will figure out how to get
 there.
 
 I still make a host_vars/VS_NAME/vars.yml with those two variables, for
-consistency with my other variables.  I also have many other definitions in
-the VS-specific inventory directory for other uses.  You can also make a
+consistency with my other variables.  I have many other definitions in
+the VS-specific inventory directory for other uses.  You can make a
 logical group of virtual systems if you wish, and use that as the parameter
 to ```-l ...```.
 
@@ -183,7 +183,7 @@ Authentication to Gaia API needs two variables (obviously):
 
 The vars.yml for this playbook contains these two variables, but you can
 place them anywhere else in your inventory.  However, you will be better
-served by using a level of indirection, which also helps keep vaulted
+served by using a level of indirection, which helps keep vaulted
 variables safe.
 
 1. ```ansible_user``` with ```gaia_admin_user```
@@ -207,7 +207,7 @@ depending on your preference and security needs.  This can be defined as a
 plain text string in the play vars (or vars_files), but this is rarely
 desirable.  Instead, I provide an option in vars.yml to use a vaulted
 variable in another location (such as the inventory).  This indirection
-allows you to (re)define ```gaia_admin_password``` at any level without also
+allows you to (re)define ```gaia_admin_password``` at any level without
 globally overriding ```ansible_password```.
 
 ```yaml
