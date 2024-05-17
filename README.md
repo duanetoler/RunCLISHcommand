@@ -220,7 +220,7 @@ values of each key are the plain text passwords.  The entire file is
 encrypted with ansible-vault.
 
 ```ansible_password``` can use ```gaia_admin_password``` for an immediate
-override or default to a key lookukp in ```clish_users_vault[ansible_user]```
+override or default to a key lookup in ```clish_users_vault[ansible_user]```
 otherwise.  This playbook includes vars.yml with this indirection as well.
 
 This example uses the implicit 'all' group, but this should be somewhere
