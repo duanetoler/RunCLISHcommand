@@ -111,7 +111,7 @@ all:
 
 3. VSX Virtual Systems
 
-VSX VS must be defined as a host.  These hosts get two variables applied:
+Each VSX VS must be defined as a host.  These hosts get two variables applied:
 * vs_id: the virtual system ID number
 * vsx_host: the name of the VSX cluster group (or single VSX gateway host)
 
@@ -132,7 +132,7 @@ all:
 
 A VSX VS doesn't need to have any authentication mechanisms; it's not a real
 host anyway.  The "vsx_host" variable determines what underlying host is to
-be used (delegate_to:) for the VS.  The playbook will figure out how to get
+be used for the VS (via delegate_to:).  The playbook will figure out how to get
 there.
 
 I still make a host_vars/VS_NAME/vars.yml with those two variables, for
