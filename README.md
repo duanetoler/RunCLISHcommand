@@ -20,7 +20,9 @@ git clone https://github.com/duanetoler/run_clish_command.git
 2. Configure inventory.  A sample inventory is provided in
 ```inventory.yml``` as a guide.
 
-3. Run ```run_clish_command.sh``` script:
+3. Review ```vars.yml``` to configure Gaia API username and password.  (See *Authentication* below)
+
+4. Run ```run_clish_command.sh``` script:
 
 ```sh
 ./run_clish_command.sh -c "show configuration"
@@ -181,7 +183,7 @@ Authentication to Gaia API needs two variables (obviously):
 * ansible_user
 * ansible_password
 
-The vars.yml for this playbook contains these two variables, but you can
+This playbook contains vars.yml with these two variables, but you can
 place them anywhere else in your inventory.  However, you will be better
 served by using a level of indirection, which helps keep vaulted
 variables safe.
