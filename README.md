@@ -133,7 +133,7 @@ all:
           vsx_host: vsx_cluster01
         VS02:
           vs_id: 10
-          vsx_host: vss_single_gw
+          vsx_host: vsx_single_gw
 ...
 ```
 
