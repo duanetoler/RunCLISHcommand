@@ -24,7 +24,7 @@
     lstrip_blocks: true
   delegate_to: localhost
   vars:
-    clish_command: "{% if vs_id is defined and clish_cmd == 'show configuration' %}{{ vs_clish_config_cmds }}{% else %}{{ clish_cmd }}{% endif %}"
+    clish_command: "{% if sys.vs_id is defined and clish_cmd == 'show configuration' %}{{ vs_clish_config_cmds }}{% else %}{{ clish_cmd }}{% endif %}"
 
 - name: "Create {{ config_dir }} on {{ inventory_hostname }}"
   include_tasks: run_script.yml
