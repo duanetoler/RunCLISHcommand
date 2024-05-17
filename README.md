@@ -151,7 +151,7 @@ to ```-l ...```.
 4. Ansible HTTPAPI plugin variables
 
 Somewhere in your inventory, at some level, these Ansible HTTPAPI plugin
-variables need to be defined:
+variables need to be defined.  These are used by the Gaia API Ansible modules.
 
 ```yaml
 ---
