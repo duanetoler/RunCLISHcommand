@@ -57,16 +57,25 @@ debug: false
 # you're doing.  VSX folks usually do.  :)
 vs_clish_config_cmds:
   - 'show configuration bootp'
+  - 'show configuration arp proxy'
+  - 'show configuration arp static'
   - 'show configuration iphelper'
   - 'show configuration dns'
   - 'show configuration dhcp-server'
   - 'show configuration snmp'
   - 'show configuration pbr'
+  - 'show configuration pim'
+  - 'show configuration igmp'
   - 'show configuration vpnt'
   - 'show configuration ip-reachability-detection'
   - 'show configuration prefix-list'
   - 'show configuration prefix-tree'
+  - 'show configuration router-id'
+  - 'show configuration as'
   - 'show configuration routemaps'
+  - 'show configuration ospf'
+  - 'show configuration inbound-route-filter'
+  - 'show configuration route-redistribution'
   - 'show configuration bgp'
 
 ...
