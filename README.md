@@ -58,11 +58,18 @@ A default command "show hostname" is used if ```-c``` is not provided.  Any
 valid CLISH command can be used, not just "show" commands.
 
 ```sh
-./run_clish_command.sh -i /etc/ansible/inventory.yml -c 'set static-route
+./run_clish_command.sh -i /etc/ansible/inventory.yml -l gw01,gw02 -c 'set static-route
 default nexthop gateway address 192.0.2.1 on'
 
-./run_clish_command.sh -i /etc/ansible/inventory.yml -c 'set static-route
-default comment "Default Route"'
+./run_clish_command.sh -i /etc/ansible/inventory.yml -c 'show route static'
+
+./run_clish_command.sh -i /etc/ansible/inventory.yml -l
+mgmt01,office-fw -c 'set snmp agent on'
+
+# show configuration, don't show output, use a different username, assuming
+# it's encrypted with ansible-vault, prompt for vault passphrase
+./run_clish_command.sh -i /etc/ansible/inventory.yml -l
+mgmt01,office-fw,VS01 -c 'show configuration' -s -O -u jr_admin -P
 ```
 
 However, be wary of trying to send values with special characters and
@@ -131,13 +138,15 @@ all:
 ```
 
 A VSX VS doesn't need to have any authentication mechanisms; it's not a real
-host anyway.  The "vsx_host" variable determines what underlying host is to
+host anyway.  The ```vsx_host``` variable determines what underlying host is to
 be used for the VS (via delegate_to:).  The playbook will figure out how to get
 there.
 
 I still make a host_vars/VS_NAME/vars.yml with those two variables, for
-consistency with my other variables.  You can still make a logical group of
-virtual systems if you wish, and use that as the parameter to "-l ...".
+consistency with my other variables.  I also have many other definitions in
+the VS-specific inventory directory for other uses.  You can also make a
+logical group of virtual systems if you wish, and use that as the parameter
+to ```-l ...```.
 
 4. Ansible HTTPAPI plugin variables
 
@@ -174,8 +183,8 @@ Authentication to Gaia API needs two variables (obviously):
 
 The vars.yml for this playbook contains these two variables, but you can
 place them anywhere else in your inventory.  However, you will be better
-served by using a level indirection, which also helps keep vaulted variables
-safe.
+served by using a level of indirection, which also helps keep vaulted
+variables safe.
 
 1. ```ansible_user``` with ```gaia_admin_user```
 

@@ -43,7 +43,7 @@ For example:
 The VS01 and VS09 may be hosted on VSX_Cluster01, but VSX_Cluster01 has 42
 virtual systems.  Only VS01 and VS09 are the ones we care about.
 
-A new list is created dynamically such that:
+A new list fact is created dynamically such that:
 
 ```yaml
 VSX_Cluster01:
@@ -52,12 +52,12 @@ VSX_Cluster01:
     vsx_gw02:
     vsx_gw03:
   vars:
-    vs_list:  ## This is created dynamically; don't define this manually
+    vs_list:  ## This is created dynamically
       - VS01
       - VS09
 ```
 
-This lets the playbook target remain targeting VS01 and VS09, even though
+This lets the playbook remain targeting VS01 and VS09, even though
 the tasks will later be used as ```delegate_to: vsx_gw01``` and
 ```delegate_to: vsx_gw02```, etc.
 
@@ -125,3 +125,25 @@ ok: [rtp-gw2] => {
     ]
 }
 ```
+
+## CLISH scripts and templates
+
+The core tasks are done in clish_script_build.yml.  A Jinja2 template is
+used to create the CLISH script in a local directory on the Ansible
+controller.  Several Gaia API calls are used to create a directory on the
+remote host, transfer the file with Gaia Ansible module put_file, and
+execute the script on the remote host with Gaia Ansible module run_script.
+
+After execution, the script is removed from the remote host and the local
+copy on the Ansible controller (assuming ```keep_script``` is false).
+
+THe output of the script execution can be shown during the playbook
+operation, and/or saved to a file on the Ansible controller, or neither
+(most "set" and "delete" commands generally don't return output anyway;
+although some exceptions exist).
+
+At certain points, the CLISH database lock needs to be obtained.  This
+occurs in the included task list ```clish_lock.yml```.  This uses run_script
+Gaia Ansible module to do a ```clish -c 'lock database override'``` and ```clish
+-c 'unlock database'```.  This isn't super perfect, but it tends to work
+well enough.
