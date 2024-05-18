@@ -4,7 +4,6 @@
     description: "{{ description }}"
     script: "{{ script }}"
     wait_for_task: true
-  delegate_to: "{{ inventory_hostname }}" #|default(inv_host) }}"
   register: script_res
 
 - name: Check for run-time errors

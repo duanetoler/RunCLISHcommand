@@ -57,10 +57,6 @@ VSX_Cluster01:
       - VS09
 ```
 
-This lets the playbook remain targeting VS01 and VS09, even though
-the tasks will later be used as ```delegate_to: vsx_gw01``` and
-```delegate_to: vsx_gw02```, etc.
-
 The first play is complete after processing all target list items.  The
 second play then runs, targeting the dynamic group, to complete the main
 operations of running the CLISH command on the appropriate remote host.
@@ -68,10 +64,10 @@ operations of running the CLISH command on the appropriate remote host.
 ### Why?
 
 This allows the plays to run in serial for each VS, but in parallel for all
- gateways of the VS.  I ran this playbook in the original design,
-but that resulted in serial execution for all targets, which was VERY slow. 
-When I switched to this dynamic orthogonal technique, the tasks were much
-faster and operated as you would expect.
+gateways of the VS.  I ran this playbook in the original design, but that
+resulted in serial execution for all targets, which was VERY slow.  When I
+switched to this dynamic orthogonal technique, the tasks were much faster
+and operated as you would expect.
 
 When mixing VS and non-VS targets, the non-VS targets are processed first
 and run in parallel execution as Ansible normally does.  The VS targets are

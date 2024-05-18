@@ -16,7 +16,6 @@
     msg:
       - "{% if sys['vsx_host'] is defined %}Virtual System: {{ inv_host }}, VS ID: {{ sys['vs_id'] }}{% else %}Host: {{ inv_host }}{% endif %}"
       - "{{ cmd_output }}"
-  delegate_to: "{{ inventory_hostname }}"
   when:
     - show_output |default(true) |bool
 

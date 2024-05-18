@@ -38,7 +38,6 @@
     file_name: "/home/admin/{{ config_dir }}/{{ config_file }}"
     text_content: "{{ lookup('file', [ config_dir, config_file ] |join('/') ) }}\n"
     override: true
-  delegate_to: "{{ inventory_hostname }}"
 
 - include_tasks: apply_clish_script.yml
 
